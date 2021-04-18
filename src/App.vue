@@ -33,13 +33,22 @@ export default {
   },
   methods: {
     changeProportion: function() {
-      const max = 7;
-      const min = 1;
+      const a_max = 5;
+      const a_min = 1;
+      const b_max = 20;
+      const b_min = 0;
       do {
         this.x = Math.floor(this.width * Math.random());
         this.y = Math.floor(this.height * Math.random());
-        this.w = 50 * (Math.floor( 2 * (Math.random() * (max + 1 - min)) + min));
-        this.h = 50 * (Math.floor( 2 * (Math.random() * (max + 1 - min)) + min));
+        let a = 50 * (Math.floor( 2 * (Math.random() * (a_max + 1 - a_min)) + a_min)); // 100 ~ 700, 50 刻み
+        let b = 1.0 + 0.1 * (Math.floor( (Math.random() * (b_max + 1 - b_min)) + b_min));
+        if (Math.random() < 0.5) {
+          this.w = a;
+          this.h = Math.floor(b * a);
+        } else {
+          this.w = Math.floor(b * a);
+          this.h = a; 
+        }
       } while ( this.x > this.width * 0.7 
         || this.y > this.height * 0.7 
         || this.x + this.w > this.width
@@ -52,8 +61,7 @@ export default {
       )
     },
     calcProportion: function() {
-      let gcd = this.gcd(this.w, this.h);
-      return '' + this.w / gcd + ':' + this.h / gcd + ' = '
+      return ''
        + ((this.w > this.h) ? '' + Math.round(this.w/this.h * 100) / 100 + ':1' : '1:' + Math.round(this.h / this.w * 100) / 100);
     },
     gcd: function(m, n) {
