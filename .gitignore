@@ -88,3 +88,11 @@ sw.*
 
 # Vim swap files
 *.swp
+
+
+.nuxt/App.js
+.nuxt/App.js
+.nuxt/vuetify/plugin.js
+.nuxt/views/error.html
+.nuxt/mixins/fetch.server.js
+.nuxt/App.js
