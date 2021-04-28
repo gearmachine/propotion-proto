@@ -9,6 +9,7 @@
         <g fill="none" stroke="black" stroke-width="2">
           <rect :x="x" :y="y" :width="w" :height="h" />
         </g>
+        <!--<text x="0" y="35" font-family="Verdana" font-size="35">lv:{{level}}</text>-->
       </svg>
     </v-col>
   </v-row>
@@ -26,16 +27,25 @@ export default {
       x: 100 ,
       y: 200,
       w: 100,
-      w: 80 ,
+      h: 80 ,
       enable: false,
-      param: {min: 1, max:3, div: 11},
+      params: {
+        1 : {min: 1, max:2, div: 6},
+        2 : {min: 1, max:3, div: 11},
+        3 : {min: 1, max:3, div: 21},
+      },
+      level: 1,
     }
   },
   created() {
+    this.$nuxt.$on('set_level', (level => {
+      this.setLevel(level);
+    }));
+    this.$nuxt.$emit('get_level');
   },
   methods: {
     generate() {
-      let array = this.divide(this.param);
+      let array = this.divide(this.params[this.level]);
       let answer;
       let select;
       let length = (this.width > this.height) ? this.height : this.width;
@@ -58,15 +68,14 @@ export default {
           select = array.map(value => '' + value + ' : 1');
         }
         console.log("x:", this.x, ", y:", this.y, ", w:", this.w, ", h:", this.h, ", answer:", answer, ", select:", select);
-
       } while (  
         this.x + this.w > this.width
         || this.y + this.h > this.height
-        || this.w < length / 10
-        || this.h < length / 10
+        || this.w < length / 8
+        || this.h < length / 8
       );
 
-      this.$nuxt.$emit('init', {items: select, answer: answer});
+      this.$nuxt.$emit('init', {items: select, answer: answer, levels: Object.keys(this.params)});
     },
     handleResize() {
       // resizeのたびにこいつが発火するので、ここでやりたいことをやる
@@ -84,19 +93,30 @@ export default {
 
       return result;
     },
+    setLevel(level) {
+      console.log("setlevel");
+      if (level == 0) {
+        this.level = Object.keys(this.params)[0];        
+      } else {
+        this.level = level;      
+      }
+      this.generate();
+    }
   },
   mounted() {
     if (process.browser){
       this.handleResize();
-      this.generate();
       this.enable = true;
       window.addEventListener('resize', this.handleResize);
     }
+    console.log("lv:", this.level);
+
   },
   beforeDestroy() {
     if (process.browser){
       window.removeEventListener('resize', this.handleResize);
     }
+    this.$nuxt.$off('set_level');
   }
 }
 </script>
